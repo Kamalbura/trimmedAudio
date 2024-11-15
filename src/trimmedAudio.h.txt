@@ -1,0 +1,45 @@
+#include <Arduino.h>
+#include <WiFi.h>
+#include <WiFiClient.h>
+#include <WiFiClientSecure.h>
+#include <driver/i2s.h>
+
+class trimmedAudio {
+public:
+    trimmedAudio(bool internalDAC = false, uint8_t channelEnabled = 3, uint8_t i2sPort = I2S_NUM_0);
+    ~trimmedAudio();
+    bool setPinout(uint8_t BCLK, uint8_t LRC, uint8_t DOUT, int8_t MCLK = I2S_GPIO_UNUSED);
+    void setVolume(uint8_t vol, uint8_t curve = 0);
+    bool connecttospeech(const char* speech, const char* lang);
+    void loop();
+    static void audio_info(const char* msg);
+
+private:
+    void computeLimit();
+
+    bool m_f_internalDAC;
+    uint8_t m_f_channelEnabled;
+    uint8_t m_i2s_num;
+    uint8_t m_vol;
+    uint8_t m_curve;
+    WiFiClient client;
+    WiFiClientSecure clientsecure;
+    WiFiClient* _client = nullptr;
+
+    bool m_f_psramFound;
+    char* m_chbuf = nullptr;
+    char* m_ibuff = nullptr;
+    int16_t* m_outBuff = nullptr;
+    char* m_lastHost = nullptr;
+    size_t m_chbufSize;
+    size_t m_ibuffSize;
+    size_t m_outbuffSize = 2048; // Example size, adjust as needed
+    i2s_pin_config_t m_pin_config;
+
+    uint8_t m_balance = 0; // Example balance value, adjust as needed
+    uint8_t m_vol_steps = 21; // Example volume steps, adjust as needed
+    double m_limit_left = 1.0;
+    double m_limit_right = 1.0;
+
+    // Add any other necessary member variables here
+};
